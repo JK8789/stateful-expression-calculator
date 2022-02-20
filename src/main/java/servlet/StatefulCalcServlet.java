@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-//@WebServlet("/calc/*")
 public class StatefulCalcServlet extends HttpServlet {
 
 	private static String Calc(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -34,7 +33,7 @@ public class StatefulCalcServlet extends HttpServlet {
 				char value = attribute_value.charAt(0);
 				System.out.println("value of " + String.valueOf(c) + " is " + String.valueOf(value));
 
-				if ((value >= 'a') && (value <= 'z')) { // check if value is name of another variable
+				if ((value >= 'a') && (value <= 'z')) {         // check if value is name of another variable
 					expression.append(session.getAttribute(String.valueOf(value)));
 				} else {
 					expression.append(session.getAttribute(String.valueOf(c)));
@@ -69,7 +68,6 @@ public class StatefulCalcServlet extends HttpServlet {
 		} else {
 			resp.setStatus(200);
 		}
-		System.out.println("gooing to put expression \"" + expression + "\"");
 		session.setAttribute("expression", expression);
 		System.out.println("Expression \"" + expression + "\" IS PUTED in session.");
 	}

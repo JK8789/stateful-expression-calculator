@@ -16,7 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-//import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -86,7 +85,6 @@ class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
 	}
 }
 
-//@WebFilter(filterName="CheckFilter", urlPatterns="/*")
 public class CheckFilter implements Filter {
 
 	@Override
@@ -99,7 +97,6 @@ public class CheckFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		System.out.println();
-
 		// pre-processing
 		// 1. check URI
 		HttpServletRequest req = (HttpServletRequest) request;
@@ -284,13 +281,11 @@ public class CheckFilter implements Filter {
 			throws IOException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse resp = (HttpServletResponse) response;
-		// HttpSession session = req.getSession();
 		String variable_value = inputStreamToString(req.getInputStream());
 		try {
 			int var_value = Integer.parseInt(variable_value);
-			System.out.println(" проверяем на диапазон var_value: " + var_value);
+			System.out.println("Check range var_value: " + var_value);
 			if ((var_value < -10000) || (var_value > 10000)) {
-				System.out.println("var_value in processVariable TOO BIG or too small  " + var_value);
 				resp.sendError(403, "Forbidden: too big or too small");
 				return false;
 			}
