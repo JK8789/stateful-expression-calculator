@@ -15,35 +15,29 @@ import bsh.Interpreter;
 
 public class StatefulCalcServlet extends HttpServlet {
 
-	private static String Calc(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	private String calc(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		HttpSession session = req.getSession();
-		String expr_origin = (String) session.getAttribute("expression");
-		System.out.println("       expr_origin " + expr_origin);
+		String exprOrigin = (String) session.getAttribute("expression");
 		StringBuilder expression = new StringBuilder();
-		for (int i = 0; i < expr_origin.length(); ++i) {
-			char c = expr_origin.charAt(i);
+		for (int i = 0; i < exprOrigin.length(); ++i) {
+			char c = exprOrigin.charAt(i);
 			if ((c >= 'a') && (c <= 'z')) {
-				String attribute_value = (String) session.getAttribute(String.valueOf(c));
-				System.out.println("проверка atr_value : " + attribute_value);
-				if (attribute_value == null) {
+				String attributeValue = (String) session.getAttribute(String.valueOf(c));
+				if (attributeValue == null) {
 					resp.sendError(409, "Conflict: lack of data");
 					return null;
 				}
-				char value = attribute_value.charAt(0);
-				System.out.println("value of " + String.valueOf(c) + " is " + String.valueOf(value));
-
-				if ((value >= 'a') && (value <= 'z')) {         // check if value is name of another variable
-					expression.append(session.getAttribute(String.valueOf(value)));
+				char value = attributeValue.charAt(0);
+				if ((value >= 'a') && (value <= 'z')) {
+					expression.append(session.getAttribute(attributeValue));
 				} else {
-					expression.append(session.getAttribute(String.valueOf(c)));
+					expression.append(attributeValue);
 				}
 			} else {
 				expression.append(c);
 			}
 		}
-		System.out.println("expr_result " + expression);
-
 		Interpreter interpreter = new Interpreter();
 		Integer integer = null;
 		try {
@@ -69,33 +63,19 @@ public class StatefulCalcServlet extends HttpServlet {
 			resp.setStatus(200);
 		}
 		session.setAttribute("expression", expression);
-		System.out.println("Expression \"" + expression + "\" IS PUTED in session.");
 	}
 
-	private static void processVariable(HttpServletRequest req, HttpServletResponse resp, char variable_name)
+	private static void processVariable(HttpServletRequest req, HttpServletResponse resp, char variableName)
 			throws IOException {
 		HttpSession session = req.getSession();
-		String variable_value = inputStreamToString(req.getInputStream());
-//		try {
-//			int var_value = Integer.parseInt(variable_value);
-//			System.out.println(" проверяем на диапазон var_value: " + var_value);
-//			if ((var_value < -10000) || (var_value > 10000)) {
-//				System.out.println("var_value in processVariable TOO BIG or too small  " + var_value);
-//				resp.sendError(403, "Forbidden: too big or too small");
-//				return;
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Bad parsing string  " + variable_value + "  to int");
-//		}
-
-		if (session.getAttribute(String.valueOf(variable_name)) == null) {
+		String variableValue = inputStreamToString(req.getInputStream());
+		if (session.getAttribute(String.valueOf(variableName)) == null) {
 			resp.setStatus(201);
-			resp.addHeader("Location: ", "/calc/" + variable_name);
+			resp.addHeader("Location: ", "/calc/" + variableName);
 		} else {
 			resp.setStatus(200);
 		}
-		session.setAttribute(String.valueOf(variable_name), variable_value);
-		System.out.println("variable_value IS PUTED in session  " + variable_value);
+		session.setAttribute(String.valueOf(variableName), variableValue);
 	}
 
 	@Override
@@ -127,7 +107,7 @@ public class StatefulCalcServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String res = Calc(req, resp);
+		String res = calc(req, resp);
 		if (res == null) {
 			return;
 		}
